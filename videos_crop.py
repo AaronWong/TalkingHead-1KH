@@ -53,6 +53,8 @@ def trim_and_crop(input_dir, output_dir, clip_params):
     r = int(R / W * w)
     stream = ffmpeg.input(input_filepath)
     stream = ffmpeg.trim(stream, start_frame=S, end_frame=E+1)
+    # to fix the still frame https://github.com/kkroening/ffmpeg-python/issues/155
+    stream = ffmpeg.filter(stream, 'setpts', expr='PTS-STARTPTS')
     stream = ffmpeg.crop(stream, l, t, r-l, b-t)
     stream = ffmpeg.output(stream, output_filepath)
     ffmpeg.run(stream)
